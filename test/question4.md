@@ -1,194 +1,208 @@
-### Problem Statement
+### Problem Statement: Designing a Class Architecture for a Parking Lot System
 
-You are tasked with designing the architecture for a game of Chess using constructor functions. This problem will test your understanding of prototypal inheritance and object-oriented design principles in JavaScript. Specifically, you will create a `ChessPiece` constructor function and extend it to create pieces like `Knight` and `Queen` that inherit from `ChessPiece`.
+In this exercise, you will create a class architecture for a **Parking Lot System**. You are required to design a constructor function `ParkingLot` that represents the parking lot and specific vehicles like `Car` and `Motorcycle` that inherit from a base `Vehicle` constructor.
 
-Each piece will have:
-1. **Name**: Name of the piece, like "Knight" or "Queen."
-2. **Color**: Color of the piece, either "White" or "Black."
-3. **Position**: Current position of the piece on the chessboard, represented as coordinates (e.g., "B1", "D4", etc.).
+### Problem Description:
 
-You will then implement the following behavior:
-1. Create a `ChessPiece` constructor function that takes three parameters:
-   - `name`: Name of the chess piece.
-   - `color`: Color of the chess piece.
-   - `position`: The initial position of the piece on the board, represented as a string.
-   
-2. Implement a **moveTo(newPosition)** method in `ChessPiece`, which updates the current position of the piece.
+You need to implement the following functionality:
 
-3. Create **Knight** and **Queen** constructor functions that inherit from `ChessPiece`:
-   - For the **Knight**, implement the `moveTo(newPosition)` method such that the piece can only move in an "L" shape (either two steps in one direction and one step in a perpendicular direction).
-   - For the **Queen**, implement the `moveTo(newPosition)` method such that the piece can move any number of squares in a straight line (horizontally, vertically, or diagonally).
+1. Create a constructor function `Vehicle` that takes the following parameters:
+    - `type`: The type of the vehicle, like "Car" or "Motorcycle".
+    - `licensePlate`: The license plate of the vehicle.
 
-4. Validate the moves:
-   - If the move is valid, update the position.
-   - If the move is invalid, return an error message: `"Invalid move for {PieceName}!"`
+2. Each instance of a `Vehicle` should have a method:
+    - `enterParking(spotNumber)`: This method assigns a parking spot to the vehicle.
 
-### Solution Approach
+3. Create a `ParkingLot` constructor function that takes the following parameters:
+    - `capacity`: The total number of parking spots available in the parking lot.
+    - `vehicles`: An array to hold the parked vehicles.
+  
+4. Each instance of a `ParkingLot` should have the following methods:
+    - `parkVehicle(vehicle, spotNumber)`: This method parks the vehicle in the parking lot at the specified spot if the spot is available.
+    - `removeVehicle(spotNumber)`: This method removes a vehicle from a parking spot.
 
-1. **ChessPiece Constructor**: The base constructor function that initializes the name, color, and position of a piece. It will have a `moveTo` method that updates the position.
-2. **Knight Constructor**: Inherit from `ChessPiece` and override the `moveTo` method to validate that moves are only in an "L" shape.
-3. **Queen Constructor**: Inherit from `ChessPiece` and override the `moveTo` method to validate that the piece moves in straight lines (horizontally, vertically, or diagonally).
-4. **Prototypal Inheritance**: The `Knight` and `Queen` constructor functions will inherit from `ChessPiece` using prototypal inheritance.
+5. Create two specific types of vehicles:
+   - `Car`: Inherits from `Vehicle`. When a car is parked, it requires one parking spot.
+   - `Motorcycle`: Inherits from `Vehicle`. A motorcycle also requires one parking spot.
 
-### Hints
+### Additional Requirements:
+- Use prototypal inheritance to ensure that `Car` and `Motorcycle` inherit from `Vehicle`.
+- The parking lot should have a fixed capacity. If the capacity is full, an error should be thrown when trying to park a vehicle.
+- Each vehicle should have a unique parking spot. If a spot is already taken, an error should be thrown.
+- Removing a vehicle frees up the spot for another vehicle.
 
-1. Use prototypal inheritance to ensure that the `Knight` and `Queen` constructors inherit from `ChessPiece`.
-2. For **Knight**:
-   - A valid "L" shape move means two steps in one direction and one step in a perpendicular direction, or one step in one direction and two steps in a perpendicular direction.
-3. For **Queen**:
-   - A valid move is either in a straight line (horizontal or vertical) or a diagonal.
+### Example Scenarios:
+1. Create a `ParkingLot` with 3 parking spots and park a `Car` with license plate "XYZ123" in spot 1.
+2. Park a `Motorcycle` with license plate "MOTO456" in spot 2.
+3. Try to park another vehicle in spot 1 and handle the error.
+4. Remove the `Car` from spot 1, and park another `Motorcycle` in that spot.
 
-### Test Cases
+### Hints:
+- You can track the parking spots using an array or an object where the key is the spot number, and the value is the vehicle parked at that spot.
+- Use prototypal inheritance to make sure `Car` and `Motorcycle` inherit from `Vehicle`.
+- Validate if a parking spot is available before parking a vehicle.
 
+### Code Stub:
 ```javascript
-// Create a white Knight positioned at "B1" and move it to "C3" (valid), "E2" (valid), "C2" (invalid).
-const whiteKnight = new Knight("White", "B1");
-
-console.log(whiteKnight.moveTo("C3"));  // Valid move, should update position
-console.log(whiteKnight.moveTo("E2"));  // Valid move, should update position
-console.log(whiteKnight.moveTo("C2"));  // Invalid move, should return error message
-
-// Create a black Queen positioned at "D4" and move it to "D7" (valid), "G7" (valid), "E6" (invalid).
-const blackQueen = new Queen("Black", "D4");
-
-console.log(blackQueen.moveTo("D7"));  // Valid move, should update position
-console.log(blackQueen.moveTo("G7"));  // Valid move, should update position
-console.log(blackQueen.moveTo("E6"));  // Invalid move, should return error message
-```
-
-### Code Stub
-
-```javascript
-// Base constructor function
-function ChessPiece(name, color, position) {
-    this.name = name;
-    this.color = color;
-    this.position = position;
+function Vehicle(type, licensePlate) {
+    this.type = type;
+    this.licensePlate = licensePlate;
 }
 
-ChessPiece.prototype.moveTo = function(newPosition) {
-    this.position = newPosition;
+Vehicle.prototype.enterParking = function(spotNumber) {
+    this.parkingSpot = spotNumber;
 };
 
-// Knight constructor function
-function Knight(color, position) {
-    ChessPiece.call(this, 'Knight', color, position);
+function ParkingLot(capacity) {
+    this.capacity = capacity;
+    this.vehicles = {};
 }
 
-// Ensure Knight inherits from ChessPiece
-Knight.prototype = Object.create(ChessPiece.prototype);
-Knight.prototype.constructor = Knight;
-
-// Implement moveTo for Knight with specific movement logic
-
-// Queen constructor function
-function Queen(color, position) {
-    ChessPiece.call(this, 'Queen', color, position);
-}
-
-// Ensure Queen inherits from ChessPiece
-Queen.prototype = Object.create(ChessPiece.prototype);
-Queen.prototype.constructor = Queen;
-
-// Implement moveTo for Queen with specific movement logic
-
-// Write test cases below
-```
-
-### Complete Solution
-
-```javascript
-// Base constructor function
-function ChessPiece(name, color, position) {
-    this.name = name;
-    this.color = color;
-    this.position = position;
-}
-
-ChessPiece.prototype.moveTo = function(newPosition) {
-    this.position = newPosition;
-};
-
-// Utility function to convert positions like 'B1' to numeric coordinates [x, y]
-function positionToCoords(pos) {
-    const x = pos.charCodeAt(0) - 'A'.charCodeAt(0);
-    const y = parseInt(pos[1]) - 1;
-    return [x, y];
-}
-
-// Utility function to convert coordinates back to positions like 'B1'
-function coordsToPosition(coords) {
-    const x = String.fromCharCode(coords[0] + 'A'.charCodeAt(0));
-    const y = coords[1] + 1;
-    return x + y;
-}
-
-// Knight constructor function
-function Knight(color, position) {
-    ChessPiece.call(this, 'Knight', color, position);
-}
-
-Knight.prototype = Object.create(ChessPiece.prototype);
-Knight.prototype.constructor = Knight;
-
-Knight.prototype.moveTo = function(newPosition) {
-    const [currentX, currentY] = positionToCoords(this.position);
-    const [newX, newY] = positionToCoords(newPosition);
-
-    const dx = Math.abs(newX - currentX);
-    const dy = Math.abs(newY - currentY);
-
-    // Knight can move in "L" shape (2 + 1 or 1 + 2)
-    if ((dx === 2 && dy === 1) || (dx === 1 && dy === 2)) {
-        this.position = newPosition;
-    } else {
-        return `Invalid move for Knight!`;
+ParkingLot.prototype.parkVehicle = function(vehicle, spotNumber) {
+    if (Object.keys(this.vehicles).length >= this.capacity) {
+        throw new Error("Parking lot is full");
     }
+    if (this.vehicles[spotNumber]) {
+        throw new Error("Spot is already taken");
+    }
+    this.vehicles[spotNumber] = vehicle;
+    vehicle.enterParking(spotNumber);
 };
 
-// Queen constructor function
-function Queen(color, position) {
-    ChessPiece.call(this, 'Queen', color, position);
+ParkingLot.prototype.removeVehicle = function(spotNumber) {
+    if (!this.vehicles[spotNumber]) {
+        throw new Error("No vehicle in this spot");
+    }
+    delete this.vehicles[spotNumber];
+};
+
+function Car(licensePlate) {
+    Vehicle.call(this, "Car", licensePlate);
 }
 
-Queen.prototype = Object.create(ChessPiece.prototype);
-Queen.prototype.constructor = Queen;
+Car.prototype = Object.create(Vehicle.prototype);
+Car.prototype.constructor = Car;
 
-Queen.prototype.moveTo = function(newPosition) {
-    const [currentX, currentY] = positionToCoords(this.position);
-    const [newX, newY] = positionToCoords(newPosition);
+function Motorcycle(licensePlate) {
+    Vehicle.call(this, "Motorcycle", licensePlate);
+}
 
-    const dx = Math.abs(newX - currentX);
-    const dy = Math.abs(newY - currentY);
+Motorcycle.prototype = Object.create(Vehicle.prototype);
+Motorcycle.prototype.constructor = Motorcycle;
 
-    // Queen can move in straight line or diagonally
-    if (dx === dy || currentX === newX || currentY === newY) {
-        this.position = newPosition;
-    } else {
-        return `Invalid move for Queen!`;
-    }
-};
+// Test cases
+const lot = new ParkingLot(3);
+const car = new Car('XYZ123');
+const motorcycle = new Motorcycle('MOTO456');
 
-// Test your solution
-const whiteKnight = new Knight("White", "B1");
+lot.parkVehicle(car, 1);  // Car parked in spot 1
+lot.parkVehicle(motorcycle, 2);  // Motorcycle parked in spot 2
 
-console.log(whiteKnight.moveTo("C3"));  // Valid move
-console.log(whiteKnight.position);      // Should be "C3"
+console.log(lot.vehicles);  // { '1': Car, '2': Motorcycle }
 
-console.log(whiteKnight.moveTo("E2"));  // Valid move
-console.log(whiteKnight.position);      // Should be "E2"
-
-console.log(whiteKnight.moveTo("C2"));  // Invalid move
-
-const blackQueen = new Queen("Black", "D4");
-
-console.log(blackQueen.moveTo("D7"));   // Valid move
-console.log(blackQueen.position);       // Should be "D7"
-
-console.log(blackQueen.moveTo("G7"));   // Valid move
-console.log(blackQueen.position);       // Should be "G7"
-
-console.log(blackQueen.moveTo("E6"));   // Invalid move
+lot.removeVehicle(1);  // Car removed from spot 1
+const newMotorcycle = new Motorcycle('MOTO789');
+lot.parkVehicle(newMotorcycle, 1);  // Motorcycle parked in spot 1
+console.log(lot.vehicles);  // { '1': Motorcycle, '2': Motorcycle }
 ```
 
-This enhanced problem introduces more complex movement rules for the Knight and Queen, and tests students' ability to manage prototypal inheritance, coordinate conversions, and chess-specific movement logic.
+### Solution Approach:
+1. **Vehicle Constructor:** Define a generic `Vehicle` constructor that holds properties like `type` and `licensePlate`.
+2. **Prototypal Inheritance:** Set up prototypal inheritance so `Car` and `Motorcycle` inherit from `Vehicle`.
+3. **ParkingLot Constructor:** Define a `ParkingLot` constructor that initializes the capacity and an empty object to track parked vehicles.
+4. **parkVehicle Method:** Implement logic to check for available parking spots and ensure vehicles are parked correctly. Handle errors when the lot is full or the spot is taken.
+5. **removeVehicle Method:** Implement logic to remove a vehicle from a specific parking spot, freeing up the spot for other vehicles.
+6. **Test Cases:** Test parking and removing vehicles, checking for errors when the lot is full or spots are occupied.
+
+### Complete Solution:
+```javascript
+function Vehicle(type, licensePlate) {
+    this.type = type;
+    this.licensePlate = licensePlate;
+}
+
+Vehicle.prototype.enterParking = function(spotNumber) {
+    this.parkingSpot = spotNumber;
+};
+
+function ParkingLot(capacity) {
+    this.capacity = capacity;
+    this.vehicles = {};
+}
+
+ParkingLot.prototype.parkVehicle = function(vehicle, spotNumber) {
+    if (Object.keys(this.vehicles).length >= this.capacity) {
+        throw new Error("Parking lot is full");
+    }
+    if (this.vehicles[spotNumber]) {
+        throw new Error("Spot is already taken");
+    }
+    this.vehicles[spotNumber] = vehicle;
+    vehicle.enterParking(spotNumber);
+};
+
+ParkingLot.prototype.removeVehicle = function(spotNumber) {
+    if (!this.vehicles[spotNumber]) {
+        throw new Error("No vehicle in this spot");
+    }
+    delete this.vehicles[spotNumber];
+};
+
+function Car(licensePlate) {
+    Vehicle.call(this, "Car", licensePlate);
+}
+
+Car.prototype = Object.create(Vehicle.prototype);
+Car.prototype.constructor = Car;
+
+function Motorcycle(licensePlate) {
+    Vehicle.call(this, "Motorcycle", licensePlate);
+}
+
+Motorcycle.prototype = Object.create(Vehicle.prototype);
+Motorcycle.prototype.constructor = Motorcycle;
+
+// Test cases
+try {
+    const lot = new ParkingLot(3);
+    const car = new Car('XYZ123');
+    const motorcycle = new Motorcycle('MOTO456');
+    
+    lot.parkVehicle(car, 1);  // Car parked in spot 1
+    console.log(lot.vehicles);  // { '1': Car }
+
+    lot.parkVehicle(motorcycle, 2);  // Motorcycle parked in spot 2
+    console.log(lot.vehicles);  // { '1': Car, '2': Motorcycle }
+
+    // Trying to park another vehicle in an occupied spot
+    const anotherCar = new Car('ABC789');
+    lot.parkVehicle(anotherCar, 1);  // Error: Spot is already taken
+} catch (error) {
+    console.log(error.message);
+}
+
+try {
+    const lot = new ParkingLot(2);
+    const car = new Car('XYZ123');
+    const motorcycle = new Motorcycle('MOTO456');
+    
+    lot.parkVehicle(car, 1);  // Car parked in spot 1
+    lot.parkVehicle(motorcycle, 2);  // Motorcycle parked in spot 2
+    
+    lot.removeVehicle(1);  // Car removed from spot 1
+    console.log(lot.vehicles);  // { '2': Motorcycle }
+
+    const newMotorcycle = new Motorcycle('MOTO789');
+    lot.parkVehicle(newMotorcycle, 1);  // Motorcycle parked in spot 1
+    console.log(lot.vehicles);  // { '1': Motorcycle, '2': Motorcycle }
+} catch (error) {
+    console.log(error.message);
+}
+```
+
+### Test Cases:
+1. `lot.parkVehicle(car, 1)`: Car parks in spot 1.
+2. `lot.parkVehicle(motorcycle, 2)`: Motorcycle parks in spot 2.
+3. Trying to park a vehicle in an already occupied spot throws `"Spot is already taken"`.
+4. `lot.removeVehicle(1)`: Removes the car from spot 1.
+5. Successfully parks a new motorcycle in the freed spot.

@@ -1,113 +1,117 @@
-### Problem Statement:
+### Problem Statement
 
-**Title: Deep Clone with Modified Keys**
+Write a function called `cloneObjectWithExclusion` that takes two parameters: an object and an array of keys to exclude. The function should return a deep copy of the object but exclude the properties whose keys are in the exclusion array. The deep clone should be created such that any changes made to the new object do not affect the original object.
 
-Write a function called `deepCloneWithModifications` that iterates through all keys of an object passed as an argument and creates a deep copy of the object. In the deep copy, the function should modify all string values by appending the word "_cloned" at the end of each string value, while keeping other types of values intact. The function should return this deep clone of the object.
+- **Input:** 
+  - An object `obj` (can have nested objects) 
+  - An array `excludeKeys` which contains keys to be excluded from the cloned object.
 
-**Requirements:**
-1. The copy should be deep, meaning that changes to nested objects in the new object should not affect the original object.
-2. For any string value in the object, append "_cloned" to the end of the string.
-3. Non-string values such as numbers, booleans, or other objects should remain the same.
+- **Output:** 
+  - A deep-cloned object with the specified keys excluded.
 
-**Constraints:**
-- The input object may have nested objects and arrays.
-- The function should handle arrays and modify string elements inside them as well.
+**Note:**
+- The function should iterate through all properties of the object, including nested objects.
+- Any key in `excludeKeys` should not appear in the cloned object.
 
-### Solution Approach:
-- Use recursion to handle nested objects and arrays.
-- For each key, check if the value is a string; if so, append "_cloned" to it.
-- For objects and arrays, make recursive calls to handle nested elements.
-- Use a helper function to perform the recursive deep cloning.
+### Hints
+1. Use recursion to iterate through nested objects.
+2. Handle arrays and objects separately since both may require cloning.
+3. Check if a key exists in the `excludeKeys` array before copying it to the new object.
+4. Use `typeof` to differentiate between primitive values and objects.
 
-### Hints:
-1. Use recursion to iterate over nested objects and arrays.
-2. To check if a value is a string, use `typeof`.
-3. You can use the `Array.isArray()` method to differentiate between arrays and objects.
+### Solution Approach
 
-### Test Cases:
+1. Create a helper function that recursively iterates through each property of the object.
+2. If a property is an object, recursively call the function on that object.
+3. If a property is in the `excludeKeys` array, skip it during the cloning process.
+4. Ensure that arrays are also handled correctly by iterating through their elements.
+5. Return the deep-cloned object.
+
+### Examples
+
+#### Example 1:
 ```js
-// Test Case 1: Basic object with string and number values
-const obj1 = { name: "Alice", age: 25, city: "Wonderland" };
-deepCloneWithModifications(obj1); 
-// Expected Output: { name: "Alice_cloned", age: 25, city: "Wonderland_cloned" }
+Input:
+const obj = { a: 1, b: { c: 2, d: 3 }, e: 4 };
+const excludeKeys = ['b', 'e'];
 
-// Test Case 2: Object with nested objects
-const obj2 = { 
-    user: { name: "Bob", details: { city: "CityName", id: 101 } },
-    active: true 
-};
-deepCloneWithModifications(obj2);
-// Expected Output: { 
-//   user: { name: "Bob_cloned", details: { city: "CityName_cloned", id: 101 } }, 
-//   active: true 
-// }
+Output:
+{ a: 1 }
 
-// Test Case 3: Object with arrays
-const obj3 = { 
-    items: ["apple", "banana", "carrot"], 
-    count: 3 
-};
-deepCloneWithModifications(obj3);
-// Expected Output: { items: ["apple_cloned", "banana_cloned", "carrot_cloned"], count: 3 }
+Explanation:
+The properties `b` and `e` are excluded, and only `a` remains in the deep clone.
 ```
 
-### Code Stub:
+#### Example 2:
 ```js
-function deepCloneWithModifications(obj) {
-    // Students should complete this function
+Input:
+const obj = { x: 10, y: { z: 20, w: 30 }, m: { n: 40 } };
+const excludeKeys = ['y'];
+
+Output:
+{ x: 10, m: { n: 40 } }
+
+Explanation:
+The property `y` is excluded, and the rest of the object is deep-cloned.
+```
+
+### Code Stub
+
+```js
+function cloneObjectWithExclusion(obj, excludeKeys) {
+    // Your code here
 }
-
-// Example test cases for students to test their solution
-const obj1 = { name: "Alice", age: 25, city: "Wonderland" };
-console.log(deepCloneWithModifications(obj1));
-
-const obj2 = { 
-    user: { name: "Bob", details: { city: "CityName", id: 101 } },
-    active: true 
-};
-console.log(deepCloneWithModifications(obj2));
-
-const obj3 = { 
-    items: ["apple", "banana", "carrot"], 
-    count: 3 
-};
-console.log(deepCloneWithModifications(obj3));
 ```
 
-### Complete Solution:
+### Complete Solution
+
 ```js
-function deepCloneWithModifications(obj) {
-    if (Array.isArray(obj)) {
-        return obj.map(item => deepCloneWithModifications(item));
-    } else if (typeof obj === 'object' && obj !== null) {
-        const clone = {};
-        for (const key in obj) {
-            if (typeof obj[key] === 'string') {
-                clone[key] = obj[key] + '_cloned';
-            } else {
-                clone[key] = deepCloneWithModifications(obj[key]);
-            }
-        }
-        return clone;
+function cloneObjectWithExclusion(obj, excludeKeys) {
+    if (obj === null || typeof obj !== 'object') {
+        return obj; // return if obj is a primitive
     }
-    return obj;
+  
+    // Handle arrays separately
+    if (Array.isArray(obj)) {
+        return obj.map(item => cloneObjectWithExclusion(item, excludeKeys));
+    }
+  
+    const newObj = {};
+  
+    for (const key in obj) {
+        if (obj.hasOwnProperty(key) && !excludeKeys.includes(key)) {
+            // Recursively clone if the property is an object
+            newObj[key] = cloneObjectWithExclusion(obj[key], excludeKeys);
+        }
+    }
+  
+    return newObj;
 }
-
-// Test cases
-const obj1 = { name: "Alice", age: 25, city: "Wonderland" };
-console.log(deepCloneWithModifications(obj1));
-
-const obj2 = { 
-    user: { name: "Bob", details: { city: "CityName", id: 101 } },
-    active: true 
-};
-console.log(deepCloneWithModifications(obj2));
-
-const obj3 = { 
-    items: ["apple", "banana", "carrot"], 
-    count: 3 
-};
-console.log(deepCloneWithModifications(obj3));
 ```
 
-In this modified version of the problem, the added complexity of appending "_cloned" to string values extends the difficulty slightly beyond a simple deep clone.
+### Test Cases
+
+```js
+// Test case 1
+const obj1 = { a: 1, b: { c: 2, d: 3 }, e: 4 };
+const exclude1 = ['b', 'e'];
+console.log(cloneObjectWithExclusion(obj1, exclude1)); 
+// Expected output: { a: 1 }
+
+// Test case 2
+const obj2 = { x: 10, y: { z: 20, w: 30 }, m: { n: 40 } };
+const exclude2 = ['y'];
+console.log(cloneObjectWithExclusion(obj2, exclude2)); 
+// Expected output: { x: 10, m: { n: 40 } }
+
+// Test case 3: Empty object
+console.log(cloneObjectWithExclusion({}, [])); 
+// Expected output: {}
+
+// Test case 4: No exclusions
+const obj3 = { a: 1, b: { c: 2 }, d: 4 };
+console.log(cloneObjectWithExclusion(obj3, [])); 
+// Expected output: { a: 1, b: { c: 2 }, d: 4 }
+```
+
+This version of the problem tests deep cloning while introducing the complexity of handling key exclusions, offering a twist on the original concept.

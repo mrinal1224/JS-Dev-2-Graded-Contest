@@ -1,136 +1,110 @@
-### Problem Statement
+### Problem Statement: 
 
-You are tasked with writing a function called `walletSystem`, which simulates a more advanced digital wallet system that supports multiple currencies. The `walletSystem` function will take an initial balance (an object where the keys are currency codes like `USD`, `EUR`, etc., and values are numbers representing amounts) as input and return an object with the following methods:
+You are building a **task manager** for users to track their daily tasks. Implement a function `taskManager` that takes no parameters and returns an object with the following methods:
 
-1. **addFunds(currency, amount)**: Adds the specified `amount` to the balance of the specified `currency`. If the currency does not exist in the wallet, initialize it with the given `amount`.
-2. **spendFunds(currency, amount)**: Subtracts the specified `amount` from the balance of the specified `currency`, but only if the balance is sufficient for that currency. If the balance is insufficient for that currency, return a message: `"Insufficient balance in {currency}!"`.
-3. **checkBalance(currency)**: Returns the current balance for the specified `currency`. If the currency is not available in the wallet, return a message: `"No balance available for {currency}!"`.
-4. **convertFunds(fromCurrency, toCurrency, conversionRate)**: Converts the entire balance from one currency to another using the provided `conversionRate`. The `conversionRate` will be a multiplier, such that `conversionRate * fromCurrencyBalance = toCurrencyBalance`. After conversion, the balance in `fromCurrency` should be set to zero.
+1. **addTask(task)**: Adds a new task (string) to the user's task list.
+2. **removeTask(task)**: Removes the specified task from the task list if it exists. If the task does not exist, return the message `"Task not found"`.
+3. **listTasks()**: Returns an array of all tasks currently in the task list.
 
-**Requirements**:
-- The balances should be maintained privately within the closure of the `walletSystem` function. They should not be directly accessible or modifiable outside of the provided methods.
-- The wallet's methods should be the only way to interact with or modify the balances.
-- Conversion should correctly calculate the balances in both currencies.
+The list of tasks should be private and only accessible through the provided methods. Ensure that tasks cannot be directly accessed or modified outside the methods.
 
-### Solution Approach
+### Requirements:
+- The `taskManager` function should allow users to manage their tasks only via the provided methods.
+- The task list should remain private, and the tasks should not be accessible directly.
+- When removing a task, check if it exists. If not, return `"Task not found"`.
 
-The solution requires:
-1. **Private balance**: Store the balances for multiple currencies within the closure of the `walletSystem` function using an object.
-2. **Methods**: Return an object containing the methods to interact with the wallet’s balance.
-3. **addFunds**: Either increment the balance for an existing currency or initialize it if the currency doesn’t exist.
-4. **spendFunds**: Subtract the amount from the balance of the specified currency if sufficient funds exist, or return an error message.
-5. **checkBalance**: Return the balance of the specified currency or an error message if the currency is not found.
-6. **convertFunds**: Convert the balance of one currency to another using the given conversion rate and update the balances accordingly.
+### Hints:
+- Use closures to keep the task list private, ensuring that tasks are only added, removed, or viewed using the defined methods.
+- You may want to use an array to store the tasks and provide methods to add, remove, and list tasks.
 
-### Hints
-
-1. Use closures to encapsulate the wallet’s balances for multiple currencies.
-2. You will need to maintain an object where each key is a currency code and each value is the balance for that currency.
-3. Be careful with currency conversion. After conversion, the original currency’s balance should be set to zero.
-
-### Test Cases
+### Example:
 
 ```javascript
-const myWallet = walletSystem({ USD: 100, EUR: 200 });
-
-console.log(myWallet.checkBalance('USD'));  // Output: 100
-myWallet.addFunds('USD', 50);
-console.log(myWallet.checkBalance('USD'));  // Output: 150
-console.log(myWallet.spendFunds('USD', 200)); // Output: "Insufficient balance in USD!"
-myWallet.spendFunds('USD', 30);
-console.log(myWallet.checkBalance('USD'));  // Output: 120
-
-myWallet.addFunds('GBP', 300);
-console.log(myWallet.checkBalance('GBP'));  // Output: 300
-
-myWallet.convertFunds('EUR', 'USD', 1.2); 
-console.log(myWallet.checkBalance('EUR'));  // Output: 0
-console.log(myWallet.checkBalance('USD'));  // Output: 360
+const myTasks = taskManager();
+myTasks.addTask('Do laundry');
+myTasks.addTask('Buy groceries');
+myTasks.listTasks();                // Returns: ['Do laundry', 'Buy groceries']
+myTasks.removeTask('Go jogging');   // Returns: "Task not found"
+myTasks.removeTask('Buy groceries'); 
+myTasks.listTasks();                // Returns: ['Do laundry']
 ```
 
-### Code Stub
+### Code Stub (For Students to Work On):
 
 ```javascript
-function walletSystem(initialBalances) {
-    // Students will write their solution here.
+function taskManager() {
+  // Students will implement the function here
 }
-
-// Test your solution with the test cases below:
-const myWallet = walletSystem({ USD: 100, EUR: 200 });
-
-console.log(myWallet.checkBalance('USD'));  // Expected Output: 100
-myWallet.addFunds('USD', 50);
-console.log(myWallet.checkBalance('USD'));  // Expected Output: 150
-console.log(myWallet.spendFunds('USD', 200)); // Expected Output: "Insufficient balance in USD!"
-myWallet.spendFunds('USD', 30);
-console.log(myWallet.checkBalance('USD'));  // Expected Output: 120
-
-myWallet.addFunds('GBP', 300);
-console.log(myWallet.checkBalance('GBP'));  // Expected Output: 300
-
-myWallet.convertFunds('EUR', 'USD', 1.2); 
-console.log(myWallet.checkBalance('EUR'));  // Expected Output: 0
-console.log(myWallet.checkBalance('USD'));  // Expected Output: 360
 ```
 
-### Complete Solution
+### Solution Approach:
+
+1. **Use Closures:** 
+   - Keep the task list private within the scope of the `taskManager` function using closures.
+   - Define methods `addTask`, `removeTask`, and `listTasks` to manage the task list.
+
+2. **addTask Method:**
+   - This method will append the task to the private array storing the tasks.
+
+3. **removeTask Method:**
+   - This method will check if the specified task exists in the list. If it does, remove it from the array. If it doesn’t, return `"Task not found"`.
+
+4. **listTasks Method:**
+   - Return the entire task list as an array.
+
+### Complete Solution:
 
 ```javascript
-function walletSystem(initialBalances) {
-    let balances = { ...initialBalances }; // Private object storing the balance for multiple currencies
+function taskManager() {
+  let tasks = [];
 
-    return {
-        addFunds(currency, amount) {
-            if (!balances[currency]) {
-                balances[currency] = 0; // Initialize if currency doesn't exist
-            }
-            balances[currency] += amount;
-        },
-        spendFunds(currency, amount) {
-            if (!balances[currency]) {
-                return `No balance available for ${currency}!`;
-            }
-            if (amount > balances[currency]) {
-                return `Insufficient balance in ${currency}!`;
-            }
-            balances[currency] -= amount;
-        },
-        checkBalance(currency) {
-            if (!balances[currency]) {
-                return `No balance available for ${currency}!`;
-            }
-            return balances[currency];
-        },
-        convertFunds(fromCurrency, toCurrency, conversionRate) {
-            if (!balances[fromCurrency]) {
-                return `No balance available for ${fromCurrency}!`;
-            }
-            const convertedAmount = balances[fromCurrency] * conversionRate;
-            if (!balances[toCurrency]) {
-                balances[toCurrency] = 0;
-            }
-            balances[toCurrency] += convertedAmount;
-            balances[fromCurrency] = 0; // Set the original currency's balance to zero after conversion
-        }
-    };
+  return {
+    addTask: function(task) {
+      tasks.push(task);
+    },
+    removeTask: function(task) {
+      const index = tasks.indexOf(task);
+      if (index === -1) {
+        return "Task not found";
+      }
+      tasks.splice(index, 1);
+    },
+    listTasks: function() {
+      return tasks;
+    }
+  };
 }
-
-// Test your solution with the test cases below:
-const myWallet = walletSystem({ USD: 100, EUR: 200 });
-
-console.log(myWallet.checkBalance('USD'));  // Output: 100
-myWallet.addFunds('USD', 50);
-console.log(myWallet.checkBalance('USD'));  // Output: 150
-console.log(myWallet.spendFunds('USD', 200)); // Output: "Insufficient balance in USD!"
-myWallet.spendFunds('USD', 30);
-console.log(myWallet.checkBalance('USD'));  // Output: 120
-
-myWallet.addFunds('GBP', 300);
-console.log(myWallet.checkBalance('GBP'));  // Output: 300
-
-myWallet.convertFunds('EUR', 'USD', 1.2); 
-console.log(myWallet.checkBalance('EUR'));  // Output: 0
-console.log(myWallet.checkBalance('USD'));  // Output: 360
 ```
 
-This version introduces multi-currency handling and conversion, adding complexity by requiring students to manage multiple balances and perform calculations based on exchange rates. It also deepens their understanding of closures and state management in JavaScript.
+### Test Cases:
+
+```javascript
+// Test Case 1: Basic functionality
+const myTasks = taskManager();
+myTasks.addTask('Do laundry');
+myTasks.addTask('Buy groceries');
+console.log(myTasks.listTasks());                 // Output: ['Do laundry', 'Buy groceries']
+console.log(myTasks.removeTask('Go jogging'));    // Output: "Task not found"
+myTasks.removeTask('Buy groceries');
+console.log(myTasks.listTasks());                 // Output: ['Do laundry']
+
+// Test Case 2: Removing non-existing task
+const tasks2 = taskManager();
+tasks2.addTask('Write code');
+console.log(tasks2.removeTask('Test code'));      // Output: "Task not found"
+console.log(tasks2.listTasks());                  // Output: ['Write code']
+
+// Test Case 3: Adding and removing tasks
+const tasks3 = taskManager();
+tasks3.addTask('Do dishes');
+tasks3.addTask('Clean room');
+tasks3.addTask('Pay bills');
+console.log(tasks3.listTasks());                  // Output: ['Do dishes', 'Clean room', 'Pay bills']
+tasks3.removeTask('Clean room');
+console.log(tasks3.listTasks());                  // Output: ['Do dishes', 'Pay bills']
+```
+
+### Explanation:
+- The tasks are stored in a private array, `tasks`, within the closure of the `taskManager` function.
+- The methods `addTask`, `removeTask`, and `listTasks` allow controlled access and modification of the task list.
+- The task list is not accessible directly from outside the function, ensuring privacy through closures.
